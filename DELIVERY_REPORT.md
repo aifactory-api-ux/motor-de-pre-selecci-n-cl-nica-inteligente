@@ -10,7 +10,7 @@
 - Failed items: 12
 - Requirements: not measured
 - Fidelity: not measured
-- Abort reason: Retry budget exceeded for 15
+- Abort reason: none
 
 ## Outstanding findings
 
