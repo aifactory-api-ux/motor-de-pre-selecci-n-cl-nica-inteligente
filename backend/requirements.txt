@@ -1,0 +1,17 @@
+# Dependencias del backend "Pre-screening para Ensayos Clínicos Estado 1".
+# Stack obligatorio: Python + FastAPI + PostgreSQL.
+
+# --- Framework y servidor ASGI ---
+fastapi==0.104.1
+uvicorn[standard]==0.24.0.post1
+
+# --- Validación de esquemas y configuración ---
+pydantic==2.5.3
+
+# --- Persistencia en PostgreSQL ---
+SQLAlchemy==2.0.23
+psycopg2-binary==2.9.9
+
+# --- Autenticación JWT y hashing de contraseñas ---
+python-jose[cryptography]==3.3.0
+passlib==1.7.4

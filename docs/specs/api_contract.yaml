@@ -1,0 +1,599 @@
+openapi: 3.1.0
+info:
+  title: API Contract
+  version: 1.0.0
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+  /users/me:
+    get:
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioResponse'
+  /pacientes:
+    post:
+      summary: Create patient
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PacienteCreate'
+      responses:
+        '201':
+          description: Created patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PacienteResponse'
+  /pacientes/{paciente_id}:
+    get:
+      summary: Get patient by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: paciente_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PacienteResponse'
+    put:
+      summary: Update patient
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: paciente_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PacienteUpdate'
+      responses:
+        '200':
+          description: Updated patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PacienteResponse'
+  /protocolos:
+    get:
+      summary: List protocols
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of protocols
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProtocoloResponse'
+  /protocolos/{protocolo_id}:
+    get:
+      summary: Get protocol by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: protocolo_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Protocol
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocoloResponse'
+  /protocolos/{protocolo_id}/criterios:
+    get:
+      summary: List criteria for protocol
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: protocolo_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CriterioResponse'
+  /evaluaciones:
+    post:
+      summary: Create evaluation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluacionCreate'
+      responses:
+        '201':
+          description: Created evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluacionResponse'
+    get:
+      summary: List evaluations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of evaluations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EvaluacionResponse'
+  /evaluaciones/{evaluacion_id}:
+    get:
+      summary: Get evaluation by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: evaluacion_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluacionResponse'
+  /evaluaciones/{evaluacion_id}/submit:
+    post:
+      summary: Submit evaluation data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: evaluacion_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluacionSubmitData'
+      responses:
+        '200':
+          description: Evaluation submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluacionResponse'
+  /evaluaciones/{evaluacion_id}/reglas:
+    get:
+      summary: List evaluation rules
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: evaluacion_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of evaluation rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReglaEvaluacionResponse'
+  /audit-logs:
+    get:
+      summary: List audit logs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogResponse'
+  /metrics/evaluaciones:
+    get:
+      summary: Evaluation metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Evaluation metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationMetrics'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+      required:
+        - access_token
+        - token_type
+    UsuarioBase:
+      type: object
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+        rol:
+          type: string
+          enum: [investigador, gestor]
+        activo:
+          type: boolean
+      required:
+        - nombre
+        - email
+        - rol
+    UsuarioCreate:
+      allOf:
+        - $ref: '#/components/schemas/UsuarioBase'
+        - type: object
+          properties:
+            password:
+              type: string
+          required:
+            - password
+    UsuarioResponse:
+      allOf:
+        - $ref: '#/components/schemas/UsuarioBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+          required:
+            - id
+    PacienteBase:
+      type: object
+      properties:
+        codigo_interno:
+          type: string
+        seudonimo:
+          type: string
+        fecha_nacimiento:
+          type: string
+          format: date
+        genero:
+          type: string
+        datos_clinicos:
+          type: string
+      required:
+        - codigo_interno
+        - seudonimo
+        - fecha_nacimiento
+        - genero
+        - datos_clinicos
+    PacienteCreate:
+      $ref: '#/components/schemas/PacienteBase'
+    PacienteUpdate:
+      $ref: '#/components/schemas/PacienteBase'
+    PacienteResponse:
+      allOf:
+        - $ref: '#/components/schemas/PacienteBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+          required:
+            - id
+    ProtocoloBase:
+      type: object
+      properties:
+        nombre:
+          type: string
+        version:
+          type: string
+        fecha_vigencia:
+          type: string
+          format: date
+        descripcion:
+          type: string
+      required:
+        - nombre
+        - version
+        - fecha_vigencia
+        - descripcion
+    ProtocoloResponse:
+      allOf:
+        - $ref: '#/components/schemas/ProtocoloBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+          required:
+            - id
+    CriterioBase:
+      type: object
+      properties:
+        protocolo_id:
+          type: string
+          format: uuid
+        tipo:
+          type: string
+          enum: [inclusion, exclusion]
+        codigo:
+          type: string
+        descripcion:
+          type: string
+        umbral:
+          type: string
+      required:
+        - protocolo_id
+        - tipo
+        - codigo
+        - descripcion
+        - umbral
+    CriterioResponse:
+      allOf:
+        - $ref: '#/components/schemas/CriterioBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+          required:
+            - id
+    EvaluacionBase:
+      type: object
+      properties:
+        paciente_id:
+          type: string
+          format: uuid
+        usuario_id:
+          type: string
+          format: uuid
+        protocolo_id:
+          type: string
+          format: uuid
+        fecha_evaluacion:
+          type: string
+          format: date
+        resultado:
+          type: [string, 'null']
+          enum: [elegible, noElegible, pendiente, null]
+        estado:
+          type: string
+          enum: [pendiente, completada, en_revision]
+      required:
+        - paciente_id
+        - usuario_id
+        - protocolo_id
+        - fecha_evaluacion
+        - estado
+    EvaluacionCreate:
+      type: object
+      properties:
+        paciente_id:
+          type: string
+          format: uuid
+        protocolo_id:
+          type: string
+          format: uuid
+      required:
+        - paciente_id
+        - protocolo_id
+    EvaluacionSubmitData:
+      type: object
+      properties:
+        edad:
+          type: integer
+        pasi_score:
+          type: number
+          format: float
+        bsa_score:
+          type: number
+          format: float
+        psoriasis_cronica_meses:
+          type: integer
+        historial_tb:
+          type: boolean
+        embarazo:
+          type: boolean
+        biologicos_corticoides_recientes:
+          type: boolean
+      required:
+        - edad
+        - pasi_score
+        - bsa_score
+        - psoriasis_cronica_meses
+        - historial_tb
+        - embarazo
+        - biologicos_corticoides_recientes
+    EvaluacionResponse:
+      allOf:
+        - $ref: '#/components/schemas/EvaluacionBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            paciente:
+              $ref: '#/components/schemas/PacienteResponse'
+            protocolo:
+              $ref: '#/components/schemas/ProtocoloResponse'
+            usuario:
+              $ref: '#/components/schemas/UsuarioResponse'
+          required:
+            - id
+            - paciente
+            - protocolo
+            - usuario
+    ReglaEvaluacionBase:
+      type: object
+      properties:
+        evaluacion_id:
+          type: string
+          format: uuid
+        criterio_id:
+          type: string
+          format: uuid
+        cumple:
+          type: boolean
+        motivo_rechazo:
+          type: [string, 'null']
+        valor_paciente:
+          type: [string, 'null']
+        umbral_evaluado:
+          type: [string, 'null']
+      required:
+        - evaluacion_id
+        - criterio_id
+        - cumple
+    ReglaEvaluacionResponse:
+      allOf:
+        - $ref: '#/components/schemas/ReglaEvaluacionBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            criterio:
+              $ref: '#/components/schemas/CriterioResponse'
+          required:
+            - id
+            - criterio
+    AuditLogBase:
+      type: object
+      properties:
+        evaluacion_id:
+          type: string
+          format: uuid
+        usuario_id:
+          type: string
+          format: uuid
+        fecha_registro:
+          type: string
+          format: date
+        regla_rechazo:
+          type: [string, 'null']
+        detalle:
+          type: string
+        hash_encadenado:
+          type: string
+      required:
+        - evaluacion_id
+        - usuario_id
+        - fecha_registro
+        - detalle
+        - hash_encadenado
+    AuditLogResponse:
+      allOf:
+        - $ref: '#/components/schemas/AuditLogBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+          required:
+            - id
+    EvaluationMetrics:
+      type: object
+      properties:
+        total_evaluaciones:
+          type: integer
+        elegibles:
+          type: integer
+        no_elegibles:
+          type: integer
+        pendientes:
+          type: integer
+        motivos_rechazo_top:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+        - total_evaluaciones
+        - elegibles
+        - no_elegibles
+        - pendientes
+        - motivos_rechazo_top
